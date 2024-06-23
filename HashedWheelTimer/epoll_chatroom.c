@@ -119,6 +119,8 @@ int main(void) {
             hwtClear(timer);
             timer->curr_idx = (timer->curr_idx + 1) % timer->size;
             timeout = TIMEOUT;
+            clock_gettime(CLOCK_MONOTONIC, &start);
+            continue;
         } else if (n == -1) {
             break;
         } else {
@@ -157,10 +159,8 @@ int main(void) {
 
                     // connfd update
                     int slot_idx = hashmapSearch(hashmap, connfd); // 若存在返回slot，不存在返回-1
-                    slot_idx = hwtUpdate(timer, connfd, slot_idx); // 插入的新的slot，也就是上一个curr_idx的上一个
+                    slot_idx = hwtUpdate(timer, connfd, slot_idx); // 插入的新的slot，也就时curr_idx的上一个槽
                     hashmapInsert(hashmap, connfd, slot_idx); //更新hashmap
-
-                   
 
                 } else {
                     // handle data from a client
@@ -202,12 +202,10 @@ int main(void) {
             clock_gettime(CLOCK_MONOTONIC, &end);
             timeout -= (end.tv_sec - start.tv_sec) * 1000 + (end.tv_nsec - start.tv_nsec) / 1000000;
             if (timeout <= 0) {
-                timeout = TIMEOUT;
+                timeout = 0;
             }
             clock_gettime(CLOCK_MONOTONIC, &start);
 
         } // (n = epoll_wait) > 0
-
-         
-    }
+    } // while (1)
 }
