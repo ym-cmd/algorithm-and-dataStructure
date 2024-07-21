@@ -153,7 +153,7 @@ SkipList<K, V>::SkipList(int max_level) {
     _element_count = 0;
 
     K k;
-    V v;
+    V v = V();
     _header = new Node<K, V>(k, v, _max_level);
 }
 
